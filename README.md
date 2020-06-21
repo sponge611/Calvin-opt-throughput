@@ -73,7 +73,9 @@ In the final presentation, you have to use at least one experiment to show that 
 
 ## Final Presentation
 
-Each group has at least present the following aspects:
+The final presentation will be on 2020/6/21 (Mon.) in the class room. We will annonuce more about the excat start time later.
+
+Each group has to present at least the following aspects:
 
 - Your group id and team members
 - Your optimization goal
