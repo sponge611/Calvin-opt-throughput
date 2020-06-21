@@ -73,7 +73,7 @@ In the final presentation, you have to use at least one experiment to show that 
 
 ## Final Presentation
 
-The final presentation will be on 2020/6/29 (Mon.) in the class room. We will annonuce more about the excat start time later.
+The final presentation will be on 2020/6/29 (Mon.) in the class room. We will annonuce more about the exact start time later.
 
 Each group has to present at least the following aspects:
 
