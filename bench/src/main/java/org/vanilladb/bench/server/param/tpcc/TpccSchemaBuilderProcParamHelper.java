@@ -21,7 +21,7 @@ import org.vanilladb.core.sql.storedprocedure.StoredProcedureParamHelper;
 
 public class TpccSchemaBuilderProcParamHelper extends StoredProcedureParamHelper {
 
-	private final String TABLES_DDL[] = {
+	private static final String TABLES_DDL[] = {
 			"CREATE TABLE warehouse ( w_id INT, w_name VARCHAR(10), "
 					+ "w_street_1 VARCHAR(20), w_street_2 VARCHAR(20), w_city VARCHAR(20), "
 					+ "w_state VARCHAR(2), w_zip VARCHAR(9), w_tax DOUBLE,  w_ytd DOUBLE )",
@@ -36,8 +36,8 @@ public class TpccSchemaBuilderProcParamHelper extends StoredProcedureParamHelper
 					+ "c_since LONG, c_credit VARCHAR(2), c_credit_lim DOUBLE, "
 					+ "c_discount DOUBLE, c_balance DOUBLE, c_ytd_payment DOUBLE, "
 					+ "c_payment_cnt INT, c_delivery_cnt INT, c_data VARCHAR(500) ) ",
-			"CREATE TABLE history ( h_c_id INT, h_c_d_id INT, h_c_w_id INT, "
-					+ "h_d_id INT, h_w_id INT, h_date LONG, h_amount DOUBLE, "
+					"CREATE TABLE history ( h_id INT, h_c_id INT, h_c_d_id INT, h_c_w_id INT, "
+							+ "h_d_id INT, h_w_id INT, h_date LONG, h_amount DOUBLE, "
 					+ "h_data VARCHAR(24) )",
 			"CREATE TABLE new_order ( no_o_id INT, no_d_id INT, no_w_id INT )",
 			"CREATE TABLE orders ( o_id INT, o_d_id INT, o_w_id INT, "
@@ -54,15 +54,15 @@ public class TpccSchemaBuilderProcParamHelper extends StoredProcedureParamHelper
 					+ "s_dist_07 VARCHAR(24), s_dist_08 VARCHAR(24), s_dist_09 VARCHAR(24), "
 					+ "s_dist_10 VARCHAR(24), s_ytd INT, s_order_cnt INT, s_remote_cnt INT, "
 					+ "s_data VARCHAR(50) )" };
-	private final String INDEXES_DDL[] = {
+	private static final String INDEXES_DDL[] = {
 			"CREATE INDEX idx_warehouse ON warehouse (w_id)",
-			"CREATE INDEX idx_district ON district (d_id)",
-			"CREATE INDEX idx_customer ON customer (c_id)",
-			"CREATE INDEX idx_history ON history (h_c_id)",
-			"CREATE INDEX idx_order ON orders (o_id)",
-			"CREATE INDEX idx_new_order ON new_order (no_o_id)",
-			"CREATE INDEX idx_order_line ON order_line (ol_o_id)",
-			"CREATE INDEX idx_stock ON stock (s_i_id)",
+			"CREATE INDEX idx_district ON district (d_w_id, d_id)",
+			"CREATE INDEX idx_customer ON customer (c_w_id, c_d_id, c_id)",
+			"CREATE INDEX idx_history ON history (h_c_w_id, h_c_d_id, h_c_id, h_id)",
+			"CREATE INDEX idx_order ON orders (o_w_id, o_d_id, o_id)",
+			"CREATE INDEX idx_new_order ON new_order (no_w_id, no_d_id, no_o_id)",
+			"CREATE INDEX idx_order_line ON order_line (ol_w_id, ol_d_id, ol_o_id, ol_number)",
+			"CREATE INDEX idx_stock ON stock (s_w_id, s_i_id)",
 			"CREATE INDEX idx_item ON item (i_id)" };
 
 	public String[] getTableSchemas() {

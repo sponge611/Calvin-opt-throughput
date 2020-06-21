@@ -18,16 +18,17 @@ package org.vanilladb.bench;
 public class App {
 	
 	private static int action;
+	private static int nodeId;
 	
 	public static void main(String[] args) {
 		try {
 			parseArguments(args);
 		} catch (IllegalArgumentException e) {
 			System.err.println("Error: " + e.getMessage());
-			System.err.println("Usage: ./app [Action]");
+			System.err.println("Usage: ./app [Action] [Node Id]");
 		}
 
-		VanillaBench controller = new VanillaBench();
+		VanillaBench controller = new VanillaBench(nodeId);
 		switch (action) {
 		case 1: // Load testbed
 			controller.loadTestbed();
@@ -39,12 +40,13 @@ public class App {
 	}
 	
 	private static void parseArguments(String[] args) throws IllegalArgumentException {
-		if (args.length < 1) {
-			throw new IllegalArgumentException("The number of arguments is less than 1");
+		if (args.length < 2) {
+			throw new IllegalArgumentException("The number of arguments is less than 2");
 		}
 		
 		try {
 			action = Integer.parseInt(args[0]);
+			nodeId = Integer.parseInt(args[1]);
 		} catch (NumberFormatException e) {
 			throw new IllegalArgumentException(String.format("'%s' is not a number", args[0]));
 		}

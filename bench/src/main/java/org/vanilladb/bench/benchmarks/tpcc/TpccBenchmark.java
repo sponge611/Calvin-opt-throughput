@@ -27,8 +27,11 @@ import org.vanilladb.bench.benchmarks.tpcc.rte.TpccRte;
 import org.vanilladb.bench.remote.SutConnection;
 import org.vanilladb.bench.remote.SutResultSet;
 import org.vanilladb.bench.rte.RemoteTerminalEmulator;
+import org.vanilladb.calvin.storage.metadata.PartitionMetaMgr;
 
 public class TpccBenchmark extends Benchmark {
+	
+	private static final int TOTAL_WAREHOUSES = TpccConstants.NUM_WAREHOUSES * PartitionMetaMgr.NUM_PARTITIONS;
 	
 	private int nextWid = 0;
 	
@@ -51,7 +54,7 @@ public class TpccBenchmark extends Benchmark {
 	@Override
 	public RemoteTerminalEmulator<TpccTransactionType> createRte(SutConnection conn, StatisticMgr statMgr) {
 		TpccRte rte = new TpccRte(conn, statMgr, nextWid + 1);
-		nextWid = (nextWid + 1) % TpccConstants.NUM_WAREHOUSES;
+		nextWid = (nextWid + 1) % TOTAL_WAREHOUSES;
 		return rte;
 	}
 

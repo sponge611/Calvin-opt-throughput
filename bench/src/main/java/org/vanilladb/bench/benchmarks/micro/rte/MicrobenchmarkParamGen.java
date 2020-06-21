@@ -20,12 +20,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import org.vanilladb.bench.benchmarks.micro.MicrobenchTransactionType;
 import org.vanilladb.bench.benchmarks.micro.MicrobenchConstants;
+import org.vanilladb.bench.benchmarks.micro.MicrobenchTransactionType;
 import org.vanilladb.bench.benchmarks.tpcc.TpccValueGenerator;
 import org.vanilladb.bench.rte.TxParamGenerator;
 import org.vanilladb.bench.util.BenchProperties;
 import org.vanilladb.bench.util.RandomNonRepeatGenerator;
+import org.vanilladb.calvin.storage.metadata.PartitionMetaMgr;
 
 public class MicrobenchmarkParamGen implements TxParamGenerator<MicrobenchTransactionType> {
 	
@@ -146,6 +147,8 @@ public class MicrobenchmarkParamGen implements TxParamGenerator<MicrobenchTransa
 			writeCount = (int) (totalReadCount * WRITE_RATIO_IN_RW_TX);
 		}
 		
+		// Choose a partition
+		int partition = rvg.number(0, PartitionMetaMgr.NUM_PARTITIONS - 1);
 		
 		// =====================
 		// Generating Parameters
@@ -155,10 +158,10 @@ public class MicrobenchmarkParamGen implements TxParamGenerator<MicrobenchTransa
 		paramList.add(totalReadCount);
 
 		// Choose local hot records
-		chooseHotData(paramList, localHotCount);
+		chooseHotData(paramList, localHotCount, partition);
 
 		// Choose local cold records
-		chooseColdData(paramList, localColdCount);
+		chooseColdData(paramList, localColdCount, partition);
 		
 		// Set write count
 		paramList.add(writeCount);
@@ -205,21 +208,23 @@ public class MicrobenchmarkParamGen implements TxParamGenerator<MicrobenchTransa
 		return results;
 	}
 
-	private void chooseHotData(List<Object> paramList, int count) {
+	private void chooseHotData(List<Object> paramList, int count, int partition) {
 		RandomNonRepeatGenerator rg = new RandomNonRepeatGenerator(HOT_DATA_SIZE);
 		for (int i = 0; i < count; i++) {
 			int itemId = rg.next(); // 1 ~ size
+			itemId += partition * MicrobenchConstants.NUM_ITEMS;
 			paramList.add(itemId);
 		}
 
 	}
 
-	private void chooseColdData(List<Object> paramList, int count) {
+	private void chooseColdData(List<Object> paramList, int count, int partition) {
 		int minMainPartColdData = HOT_DATA_SIZE;
 		RandomNonRepeatGenerator rg = new RandomNonRepeatGenerator(COLD_DATA_SIZE);
 		for (int i = 0; i < count; i++) {
 			int tmp = rg.next(); // 1 ~ size
 			int itemId = minMainPartColdData + tmp;
+			itemId += partition * MicrobenchConstants.NUM_ITEMS;
 			paramList.add(itemId);
 		}
 	}

@@ -9,18 +9,21 @@ import org.vanilladb.bench.benchmarks.micro.MicroBenchmark;
 import org.vanilladb.bench.benchmarks.tpcc.TpccBenchmark;
 import org.vanilladb.bench.remote.SutConnection;
 import org.vanilladb.bench.remote.SutDriver;
-import org.vanilladb.bench.remote.jdbc.VanillaDbJdbcDriver;
-import org.vanilladb.bench.remote.sp.VanillaDbSpDriver;
+import org.vanilladb.bench.remote.calvin.CalvinSpDriver;
 import org.vanilladb.bench.rte.RemoteTerminalEmulator;
+import org.vanilladb.calvin.remote.groupcomm.client.DirectMessageListener;
 
-public class VanillaBench {
+public class VanillaBench implements DirectMessageListener {
 	private static Logger logger = Logger.getLogger(VanillaBench.class.getName());
 	
 	private SutDriver driver;
 	private Benchmark benchmarker;
 	private StatisticMgr statMgr;
 	
-	public VanillaBench() {
+	private int nodeId;
+	
+	public VanillaBench(int nodeId) {
+		this.nodeId = nodeId;
 		driver = newDriver();
 		benchmarker = newBenchmarker();
 		statMgr = newStatisticMgr(benchmarker);
@@ -49,13 +52,15 @@ public class VanillaBench {
 				logger.info("checking the database on the server...");
 
 			SutConnection conn = getConnection();
-			boolean result = benchmarker.executeDatabaseCheckProcedure(conn);
-
-			if (!result) {
-				if (logger.isLoggable(Level.SEVERE))
-					logger.severe("the database is not ready, please load the database again.");
-				return;
-			}
+			
+			// Disable the checking procedure
+//			boolean result = benchmarker.executeDatabaseCheckProcedure(conn);
+//
+//			if (!result) {
+//				if (logger.isLoggable(Level.SEVERE))
+//					logger.severe("the database is not ready, please load the database again.");
+//				return;
+//			}
 
 			if (logger.isLoggable(Level.INFO))
 				logger.info("database check passed.");
@@ -143,9 +148,11 @@ public class VanillaBench {
 		// Create a driver for connection
 		switch (BenchmarkerParameters.CONNECTION_MODE) {
 		case JDBC:
-			return new VanillaDbJdbcDriver();
+			throw new UnsupportedOperationException();
+//			return new VanillaDbJdbcDriver();
 		case SP:
-			return new VanillaDbSpDriver();
+			return new CalvinSpDriver(nodeId, this);
+//			return new VanillaDbSpDriver();
 		}
 		return null;
 	}
@@ -163,10 +170,15 @@ public class VanillaBench {
 	private StatisticMgr newStatisticMgr(Benchmark benchmarker) {
 		Set<BenchTransactionType> txnTypes = benchmarker.getBenchmarkingTxTypes();
 		String reportPostfix = benchmarker.getBenchmarkName();
-		return new StatisticMgr(txnTypes, reportPostfix);
+		return new StatisticMgr(txnTypes, reportPostfix + "-" + nodeId);
 	}
 	
 	private SutConnection getConnection() throws SQLException {
 		return driver.connectToSut();
+	}
+
+	@Override
+	public void onReceivedDirectMessage(Object message) {
+		// Do nothing
 	}
 }

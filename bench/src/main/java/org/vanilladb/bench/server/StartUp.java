@@ -24,10 +24,12 @@ public class StartUp {
 		
 		switch (BenchmarkerParameters.CONNECTION_MODE) {
 		case JDBC:
-			sut = new VanillaDbJdbcStartUp();
-			break;
+//			sut = new VanillaDbJdbcStartUp();
+//			break;
+			throw new UnsupportedOperationException();
 		case SP:
-			sut = new VanillaDbSpStartUp();
+//			sut = new VanillaDbSpStartUp();
+			sut = new CalvinSpStartUp();
 			break;
 		}
 		

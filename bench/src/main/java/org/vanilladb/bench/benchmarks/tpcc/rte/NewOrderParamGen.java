@@ -18,8 +18,11 @@ package org.vanilladb.bench.benchmarks.tpcc.rte;
 import org.vanilladb.bench.benchmarks.tpcc.TpccConstants;
 import org.vanilladb.bench.benchmarks.tpcc.TpccTransactionType;
 import org.vanilladb.bench.benchmarks.tpcc.TpccValueGenerator;
+import org.vanilladb.calvin.storage.metadata.PartitionMetaMgr;
 
 public class NewOrderParamGen implements TpccTxParamGenerator {
+	
+	private static final int TOTAL_WAREHOUSES = TpccConstants.NUM_WAREHOUSES * PartitionMetaMgr.NUM_PARTITIONS;
 
 	private int homeWid;
 	private TpccValueGenerator valueGen = new TpccValueGenerator();
@@ -69,8 +72,8 @@ public class NewOrderParamGen implements TpccTxParamGenerator {
 
 			// TODO: Verify this
 			// ol_supply_w_id. 1% of items are supplied by remote warehouse
-			if (valueGen.rng().nextDouble() < 0.05 && TpccConstants.NUM_WAREHOUSES > 1) {
-				pars[++j] = valueGen.numberExcluding(1, TpccConstants.NUM_WAREHOUSES, homeWid);
+			if (valueGen.rng().nextDouble() < 0.05 && TOTAL_WAREHOUSES > 1) {
+				pars[++j] = valueGen.numberExcluding(1, TOTAL_WAREHOUSES, homeWid);
 				allLocal = false;
 			} else
 				pars[++j] = homeWid;
