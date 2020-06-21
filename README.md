@@ -56,27 +56,20 @@ In the final presentation, you have to use at least one experiment to show that 
       -Dorg.vanilladb.comm.config.file=target/classes/org/vanilladb/comm/vanillacomm.properties
       -Dorg.vanilladb.calvin.config.file=target/classes/org/vanilladb/calvin/calvin.properties
       ```
-6. 
-
-
-6. 填寫 address
-7. 填寫 `NUM_PARTITION`
-8. 設定 Bench (RTEs, BenchType, NUM_WAREHOUSE)
-9.  設定 run configuration (各台機器各一個)
-10. Load
-    1. 啟動所有 server
-    2. 等待 ready
-    3. 啟動一台 client
-    4. 等結束
-    5. 關閉所有程式
-    6. Backup (`copy.sh`)
-11. Bench
-    1. Reset (`reset.sh`)
-    2. 啟動所有 server
-    3. 等待 ready
-    4. 啟動所有 client
-    5. 等結束
-    6. 觀察結果
+6. Load your testbed
+   1. Start all the servers
+   2. Wait for all the server ready
+   3. **Start a client**
+   4. Wait for loading finished
+   5. Close all programs
+   6. Backup your database files
+7. Benchmark
+   1. Reset database files using the backup files
+   2. Start all the servers
+   3. Wait for all the server ready
+   4. Start all the clinets
+   5. Wait for benchmarking finished
+   6. Check the result
 
 ## Final Presentation
 
