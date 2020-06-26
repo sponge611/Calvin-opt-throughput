@@ -48,7 +48,7 @@ public class CacheMgr extends Task {
 		while (true) {
 			try {
 				// Check every 1 second (fast enough?)
-				HoldPackage pack = newPacks.poll(1, TimeUnit.SECONDS);
+				HoldPackage pack = newPacks.poll(5, TimeUnit.MILLISECONDS);
 				if (pack != null && !handoverToTransaction(pack.txNum, pack.record)) {
 					pending.add(pack);
 				}
