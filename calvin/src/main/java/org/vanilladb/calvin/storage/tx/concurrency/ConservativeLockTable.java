@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.vanilladb.core.storage.tx.concurrency.LockAbortException;
 
@@ -25,7 +26,7 @@ public class ConservativeLockTable {
 		Lockers() {
 			sLockers = new LinkedList<Long>();
 			xLocker = NONE;
-			requestQueue = new LinkedList<Long>();
+			requestQueue = new ConcurrentLinkedQueue<Long>();
 		}
 		
 		@Override
@@ -55,7 +56,7 @@ public class ConservativeLockTable {
 	 * @param txNum
 	 *            the transaction that requests the lock
 	 */
-	synchronized void requestLock(Object obj, long txNum) {
+	void requestLock(Object obj, long txNum) {
 		Lockers lockers = prepareLockers(obj);
 		lockers.requestQueue.add(txNum);
 	}
@@ -92,7 +93,7 @@ public class ConservativeLockTable {
 			while (!sLockable(lockers, txNum) || (head != null && head.longValue() != txNum)) {
 
 				// For debug
-				if (lockers.xLocker != -1) {
+				/*if (lockers.xLocker != -1) {
 					Thread.currentThread().setName(String.format(
 							"%s waits for slock of %s from tx.%d (xlock holder)",
 							name, obj, lockers.xLocker));
@@ -100,7 +101,7 @@ public class ConservativeLockTable {
 					Thread.currentThread().setName(String.format(
 							"%s waits for slock of %s from tx.%d (head of queue)",
 							name, obj, head));
-				}
+				}*/
 				
 				wait();
 
@@ -159,7 +160,7 @@ public class ConservativeLockTable {
 			/* && !waitingTooLong(timestamp) */) {
 				
 				// For debug
-				if (lockers.xLocker != -1) {
+				/*if (lockers.xLocker != -1) {
 					Thread.currentThread().setName(String.format(
 							"%s waits for xlock of %s from tx.%d (xlock holder)",
 							name, obj, lockers.xLocker));
@@ -171,7 +172,7 @@ public class ConservativeLockTable {
 					Thread.currentThread().setName(String.format(
 							"%s waits for xlock of %s from tx.%d (head of queue)",
 							name, obj, head));
-				}
+				}*/
 				
 				wait();
 				lockers = prepareLockers(obj);
