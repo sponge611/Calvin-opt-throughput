@@ -29,7 +29,7 @@ public class InMemoryRecord implements Record, Serializable {
 	private List<String> dirtyFlds = new ArrayList<String>();
 	
 	private int hashCode;
-	
+	private boolean hashCodeIsInit = false;
 	public static InMemoryRecord newRecordWithFldVals(PrimaryKey key,
 			Map<String, Constant> fldVals) {
 		InMemoryRecord rec = new InMemoryRecord(key);
@@ -58,7 +58,6 @@ public class InMemoryRecord implements Record, Serializable {
 	
 	public InMemoryRecord(PrimaryKey primaryKey) {
 		this.primaryKey = primaryKey;
-		this.calCulateHashCode();
 	}
 	
 	/**
@@ -73,7 +72,6 @@ public class InMemoryRecord implements Record, Serializable {
 		isDeleted = rec.isDeleted;
 		isNewInserted = rec.isNewInserted;
 		isTemp = rec.isTemp;
-		this.calCulateHashCode();
 	}
 
 	public Constant getVal(String fldName) {
@@ -226,6 +224,9 @@ public class InMemoryRecord implements Record, Serializable {
 
 	@Override
 	public int hashCode() {
+		if(!this.hashCodeIsInit) {
+			this.calCulateHashCode();
+		}
 		return (31 * this.hashCode + this.nonKeyFldVals.hashCode());
 	}
 	
@@ -233,6 +234,7 @@ public class InMemoryRecord implements Record, Serializable {
 	private void calCulateHashCode() {
 		this.hashCode = 17;
 		this.hashCode = 31 * this.hashCode + this.primaryKey.hashCode();
+		this.hashCodeIsInit = true;
 		
 	}
 	/**
