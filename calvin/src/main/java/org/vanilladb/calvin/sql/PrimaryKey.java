@@ -26,14 +26,16 @@ public class PrimaryKey implements Serializable {
 	// We serialize this field manually
 	// because a Constant is non-serializable.
 	private transient Constant[] values;
+	private int hashCode;
+	
 	
 	public PrimaryKey(String tableName, String fld, Constant val) {
 		this.tableName = tableName;
 		this.fields = new String[1];
 		this.values = new Constant[1];
-		
 		fields[0] = fld;
 		values[0] = val;
+		this.calculateHashCode();
 	}
 	
 	/**
@@ -51,6 +53,7 @@ public class PrimaryKey implements Serializable {
 		this.tableName = tableName;
 		this.fields = fields;
 		this.values = values;
+		this.calculateHashCode();
 	}
 
 	public String getTableName() {
@@ -141,13 +144,16 @@ public class PrimaryKey implements Serializable {
 
 	@Override
 	public int hashCode() {
-		int hashCode = 17;
-		hashCode = 31 * hashCode + tableName.hashCode();
-		for (int i = 0; i < fields.length; i++) {
-			hashCode = 31 * hashCode + fields[i].hashCode();
-			hashCode = 31 * hashCode + values[i].hashCode();
-		}
 		return hashCode;
+	}
+	
+	private void calculateHashCode() {
+		this.hashCode = 17;
+		this.hashCode = 31 * this.hashCode + tableName.hashCode();
+		for (int i = 0; i < fields.length; i++) {
+			this.hashCode = 31 * this.hashCode + this.fields[i].hashCode();
+			this.hashCode = 31 * this.hashCode + this.values[i].hashCode();
+		}
 	}
 	
 	private void writeObject(ObjectOutputStream out) throws IOException {

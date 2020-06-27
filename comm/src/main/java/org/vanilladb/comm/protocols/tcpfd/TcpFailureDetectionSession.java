@@ -86,7 +86,14 @@ public class TcpFailureDetectionSession extends Session {
 				channels.add(event.getChannel());
 			}
 		}
-			
+		// Notify the upper layer the self process is ready
+		try {
+			ProcessConnected conn = new ProcessConnected(event.getChannel(), this, processList.getSelfId());
+			conn.init();
+			conn.go();
+		} catch (AppiaEventException e) {
+			e.printStackTrace();
+		}			
 	}
 	
 	private void handleRegisterSocket(RegisterSocketEvent event) {

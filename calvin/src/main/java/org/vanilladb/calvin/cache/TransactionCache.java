@@ -41,8 +41,8 @@ public class TransactionCache {
 			return rec;
 		
 		try {
-			String name = Thread.currentThread().getName();
-			Thread.currentThread().setName(name + " waits for " + key + " from remote.");
+			//String name = Thread.currentThread().getName();
+			//Thread.currentThread().setName(name + " waits for " + key + " from remote.");
 			
 			// Wait for remote records
 			synchronized (cachedRecords) {
@@ -53,7 +53,7 @@ public class TransactionCache {
 				}
 			}
 			
-			Thread.currentThread().setName(name);
+			//Thread.currentThread().setName(name);
 			
 		} catch (InterruptedException e) {
 			e.printStackTrace();
