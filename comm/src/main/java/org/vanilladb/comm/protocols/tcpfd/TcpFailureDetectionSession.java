@@ -27,7 +27,7 @@ public class TcpFailureDetectionSession extends Session {
 	private static Logger logger = Logger.getLogger(TcpFailureDetectionSession.class.getName());
 	
 	private static final int HEARTBEAT_PERIOD = 10_000; // in milliseconds
-	private static final int HEARTBEAT_TIMEOUT = 30_000; // in milliseconds
+	private static final int HEARTBEAT_TIMEOUT = 600_000; // in milliseconds
 	
 	private ProcessList processList;
 	private Map<Integer, Long> lastReceived = new HashMap<Integer, Long>();
