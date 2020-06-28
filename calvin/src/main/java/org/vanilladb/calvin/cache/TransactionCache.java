@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.vanilladb.calvin.server.Calvin;
 import org.vanilladb.calvin.sql.PrimaryKey;
 import org.vanilladb.core.sql.Constant;
 import org.vanilladb.core.storage.tx.Transaction;
@@ -27,9 +28,15 @@ public class TransactionCache {
 		if (rec != null)
 			return rec;
 		
-		rec = VanillaCoreStorage.read(key, tx);
+		rec = Calvin.cacheMgr().getInMemoryDatas(key);
 		if (rec != null) {
-			cachedRecords.put(key, rec);
+				cachedRecords.put(key, rec);
+		}
+		else {
+			rec = VanillaCoreStorage.read(key, tx);
+			if (rec != null) {
+				cachedRecords.put(key, rec);
+			}
 		}
 		
 		return rec;

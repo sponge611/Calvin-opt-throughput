@@ -214,9 +214,7 @@ public abstract class CalvinStoredProcedure<H extends StoredProcedureParamHelper
 
 		// Read local records (for both active or passive participants)
 		for (PrimaryKey k : readKeys) {
-			InMemoryRecord rec = Calvin.cacheMgr().getInMemoryDatas(k); 
-			if(rec == null)	
-				rec = cache.readFromLocal(k);
+			InMemoryRecord rec = cache.readFromLocal(k);
 			if (rec == null)
 				throw new RuntimeException("cannot find the record for " + k + " in the local stroage");
 			localReadings.put(k, rec);
