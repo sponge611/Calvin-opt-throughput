@@ -38,7 +38,7 @@ public class ConservativeLockTable {
 	}
 
 	private Map<Object, Lockers> lockerMap = new ConcurrentHashMap<Object, Lockers>();
-	private final Object[] anchors = new Object[1009];
+	private final Object[] anchors = new Object[2018];
 	
 	/*
 	 * Get the anchor  
