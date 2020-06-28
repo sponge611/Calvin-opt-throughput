@@ -149,7 +149,7 @@ public class ConservativeLockTable {
 				// Wake up other waiting transactions (on this object) to let
 				// them
 				// fight for the lockers on this object.
-				anchor.notifyAll();
+				//anchor.notifyAll();
 			
 			} catch (InterruptedException e) {
 				e.printStackTrace();
