@@ -20,19 +20,19 @@ public class ConservativeLockTable {
 		List<Long> sLockers;
 		// only one tx can hold xLock on single item
 		long xLocker;
-		Queue<Long> requestQueue;
+		Queue<Long> requestXlockQueue;
 
 		Lockers() {
 			sLockers = new LinkedList<Long>();
 			xLocker = NONE;
-			requestQueue = new LinkedList<Long>();
+			requestXlockQueue = new LinkedList<Long>();
 		}
 		
 		@Override
 		public String toString() {
 			return "{S: " + sLockers +
 					", X: " + xLocker +
-					", requests: " + requestQueue +
+					", requests: " + requestXlockQueue +
 					"}";
 		}
 	}
@@ -82,7 +82,7 @@ public class ConservativeLockTable {
 		Object anchor = getAnchor(obj);
 		synchronized(anchor) {
 			Lockers lockers = prepareLockers(obj);
-			lockers.requestQueue.add(txNum);
+			lockers.requestXlockQueue.add(txNum);
 		}
 	}
 
@@ -105,7 +105,6 @@ public class ConservativeLockTable {
 			Lockers lockers = prepareLockers(obj);
 			// check if it have already held the lock
 			if (hasSLock(lockers, txNum)) {
-				lockers.requestQueue.remove(txNum);
 				return;
 			}
 
@@ -116,8 +115,8 @@ public class ConservativeLockTable {
 				 * If this transaction is not the first one requesting this
 				 * object or it cannot get lock on this object, it must wait.
 				 */
-				Long head = lockers.requestQueue.peek();
-				while (!sLockable(lockers, txNum) || (head != null && head.longValue() != txNum)) {
+				Long head = lockers.requestXlockQueue.peek();
+				while (!sLockable(lockers, txNum) || (head != null && head.longValue() < txNum)) {
 
 					// For debug
 					/*if (lockers.xLocker != -1) {
@@ -136,7 +135,7 @@ public class ConservativeLockTable {
 					// after releasing them, it should call prepareLockers()
 					// here, instead of using lockers it obtains earlier.
 					lockers = prepareLockers(obj);
-					head = lockers.requestQueue.peek();
+					head = lockers.requestXlockQueue.peek();
 				}
 
 				Thread.currentThread().setName(name);
@@ -145,13 +144,12 @@ public class ConservativeLockTable {
 					throw new LockAbortException();
 
 				// get the s lock
-				lockers.requestQueue.poll();
 				lockers.sLockers.add(txNum);
 
 				// Wake up other waiting transactions (on this object) to let
 				// them
 				// fight for the lockers on this object.
-				anchor.notifyAll();
+				//anchor.notifyAll();
 			
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -177,7 +175,7 @@ public class ConservativeLockTable {
 		synchronized(anchor) {
 			Lockers lockers = prepareLockers(obj);
 			if (hasXLock(lockers, txNum)) {
-				lockers.requestQueue.remove(txNum);
+				lockers.requestXlockQueue.remove(txNum);
 				return;
 			}
 
@@ -185,7 +183,7 @@ public class ConservativeLockTable {
 				String name = Thread.currentThread().getName();
 			
 				// long timestamp = System.currentTimeMillis();
-				Long head = lockers.requestQueue.peek();
+				Long head = lockers.requestXlockQueue.peek();
 				while ((!xLockable(lockers, txNum) || (head != null && head.longValue() != txNum))
 						/* && !waitingTooLong(timestamp) */) {
 				
@@ -206,7 +204,7 @@ public class ConservativeLockTable {
 				
 					anchor.wait();
 					lockers = prepareLockers(obj);
-					head = lockers.requestQueue.peek();
+					head = lockers.requestXlockQueue.peek();
 				}
 
 				Thread.currentThread().setName(name);
@@ -214,7 +212,7 @@ public class ConservativeLockTable {
 				// if (!xLockable(lockers, txNum))
 				// throw new LockAbortException();
 				// get the x lock
-				lockers.requestQueue.poll();
+				lockers.requestXlockQueue.poll();
 				lockers.xLocker = txNum;
 
 				// An X lock blocks all other lockers, so it don't need to
@@ -250,7 +248,7 @@ public class ConservativeLockTable {
 			// Remove the locker, if there is no other transaction
 			// holding it
 			if (!sLocked(lks) && !xLocked(lks)
-					&& lks.requestQueue.isEmpty())
+					&& lks.requestXlockQueue.isEmpty())
 				lockerMap.remove(obj);
 		
 			// There might be someone waiting for the lock

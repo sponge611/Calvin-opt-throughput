@@ -31,8 +31,8 @@ public class ConservativeConcurrencyMgr extends ConcurrencyMgr {
 	public void bookReadKey(PrimaryKey key) {
 		if (key != null) {
 			// The key needs to be booked only once. 
-			if (!bookedObjs.contains(key))
-				lockTbl.requestLock(key, txNum);
+			/*if (!bookedObjs.contains(key))
+				lockTbl.requestLock(key, txNum);*/
 			
 			bookedObjs.add(key);
 			readObjs.add(key);
@@ -47,11 +47,11 @@ public class ConservativeConcurrencyMgr extends ConcurrencyMgr {
 	 */
 	public void bookReadKeys(Collection<PrimaryKey> keys) {
 		if (keys != null) {
-			for (PrimaryKey key : keys) {
+			/*for (PrimaryKey key : keys) {
 				// The key needs to be booked only once. 
 				if (!bookedObjs.contains(key))
 					lockTbl.requestLock(key, txNum);
-			}
+			}*/
 			
 			bookedObjs.addAll(keys);
 			readObjs.addAll(keys);
