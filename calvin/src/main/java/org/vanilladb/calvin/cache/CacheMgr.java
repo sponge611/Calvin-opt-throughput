@@ -79,14 +79,14 @@ public class CacheMgr extends Task {
 	}
 	
 	public void moveTxnCacheToInMemoryDatas(long txNum) {
-		TransactionCache temp = caches.get(txNum);
-		Map<PrimaryKey, InMemoryRecord> tempCacheRecords = temp.getCacheRecords();
-		this.inMemoryDatas.putAll(tempCacheRecords);
-		System.out.println("");
+		this.inMemoryDatas.putAll(caches.get(txNum).getCacheRecords());
+		//System.out.println("");
 		
 	}
 	
 	public InMemoryRecord getInMemoryDatas(PrimaryKey k) {
+		//if(this.inMemoryDatas.get(k) != null)
+		//	System.out.println(this.inMemoryDatas.get(k).toString());
 		return this.inMemoryDatas.get(k);
 		
 	}
