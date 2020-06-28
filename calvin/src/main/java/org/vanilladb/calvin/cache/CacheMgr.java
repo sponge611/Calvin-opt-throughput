@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.vanilladb.calvin.sql.PrimaryKey;
 import org.vanilladb.core.server.task.Task;
 import org.vanilladb.core.storage.tx.Transaction;
 
@@ -24,6 +25,7 @@ public class CacheMgr extends Task {
 	
 	private Map<Long, TransactionCache> caches = new ConcurrentHashMap<Long, TransactionCache>();
 	private LinkedBlockingQueue<HoldPackage> newPacks = new LinkedBlockingQueue<HoldPackage>();
+	private Map<PrimaryKey, InMemoryRecord> inMemoryDatas = new ConcurrentHashMap<PrimaryKey, InMemoryRecord>();
 	
 	public TransactionCache createCache(Transaction tx) {
 		TransactionCache cache = new TransactionCache(tx);
@@ -74,5 +76,18 @@ public class CacheMgr extends Task {
 			return true;
 		}
 		return false;
+	}
+	
+	public void moveTxnCacheToInMemoryDatas(long txNum) {
+		TransactionCache temp = caches.get(txNum);
+		Map<PrimaryKey, InMemoryRecord> tempCacheRecords = temp.getCacheRecords();
+		this.inMemoryDatas.putAll(tempCacheRecords);
+		System.out.println("");
+		
+	}
+	
+	public InMemoryRecord getInMemoryDatas(PrimaryKey k) {
+		return this.inMemoryDatas.get(k);
+		
 	}
 }

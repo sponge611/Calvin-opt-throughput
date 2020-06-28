@@ -105,4 +105,7 @@ public class TransactionCache {
 			cachedRecords.notifyAll();
 		}
 	}
+	public Map<PrimaryKey, InMemoryRecord> getCacheRecords() {
+		return this.cachedRecords;
+	}
 }
