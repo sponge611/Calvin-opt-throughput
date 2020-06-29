@@ -1,6 +1,7 @@
 package org.vanilladb.calvin.cache;
 
 import java.util.ArrayDeque;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,6 +27,7 @@ public class CacheMgr extends Task {
 	private Map<Long, TransactionCache> caches = new ConcurrentHashMap<Long, TransactionCache>();
 	private LinkedBlockingQueue<HoldPackage> newPacks = new LinkedBlockingQueue<HoldPackage>();
 	private Map<PrimaryKey, InMemoryRecord> inMemoryDatas = new ConcurrentHashMap<PrimaryKey, InMemoryRecord>();
+	private Map<PrimaryKey, InMemoryRecord> localReadCache =Collections.synchronizedMap(new readCache<>(10000)); 
 	
 	public TransactionCache createCache(Transaction tx) {
 		TransactionCache cache = new TransactionCache(tx);
@@ -79,7 +81,9 @@ public class CacheMgr extends Task {
 	}
 	
 	public void moveTxnCacheToInMemoryDatas(long txNum) {
-		this.inMemoryDatas.putAll(caches.get(txNum).getCacheRecords());
+		
+			this.localReadCache.putAll(caches.get(txNum).getCacheRecords());
+		
 		//System.out.println("");
 		
 	}
@@ -87,7 +91,7 @@ public class CacheMgr extends Task {
 	public InMemoryRecord getInMemoryDatas(PrimaryKey k) {
 		//if(this.inMemoryDatas.get(k) != null)
 		//	System.out.println(this.inMemoryDatas.get(k).toString());
-		return this.inMemoryDatas.get(k);
+		return this.localReadCache.get(k);
 		
 	}
 }
